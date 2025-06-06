@@ -1,0 +1,29 @@
+name: Deploy My Web App
+
+# When to run this
+on:
+  push:
+    branches: [mains]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Get your code
+    - uses: actions/checkout@v4
+    
+    # Setup Node.js
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    # Install and test
+    - run: npm install
+    - run: npm test
+    
+    # Build Docker image
+    - run: docker build -t my-webapp .
+    
+    # (You'll add deployment steps here later)
+    - run: echo "App tested and built successfully!"

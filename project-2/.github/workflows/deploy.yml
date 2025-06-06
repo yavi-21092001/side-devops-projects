@@ -3,7 +3,7 @@ name: Deploy My Web App
 # When to run this
 on:
   push:
-    branches: [mains]
+    branches: [main]
 
 jobs:
   deploy:

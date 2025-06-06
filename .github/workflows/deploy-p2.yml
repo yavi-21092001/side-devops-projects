@@ -63,6 +63,7 @@ jobs:
           --registry-username ${{ secrets.ACR_USERNAME }} \
           --registry-password ${{ secrets.ACR_PASSWORD }} \
           --dns-name-label $APP_NAME \
+          --os-type Linux \
           --ports 3001 \
           --environment-variables NODE_ENV=production \
           --cpu 1 \

@@ -1,4 +1,4 @@
-name: Project 2 - Deploy My Web App
+name: Deploy My Web App
 
 # When to run this
 on:
@@ -8,14 +8,15 @@ on:
       - 'project-2/**'
   workflow_dispatch:  # Allows manual triggering
 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     defaults:
       run:
         working-directory: ./project-2
-        
+    
     steps:
     # Get your code
     - uses: actions/checkout@v4
@@ -29,8 +30,53 @@ jobs:
     - run: npm install
     - run: npm test
     
-    # Build Docker image
-    - run: docker build -t my-webapp .
+    # Login to Azure
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    # (You'll add deployment steps here later)
-    - run: echo "App tested and built successfully!"
+    # Build and push to Azure Container Registry
+    - name: Build and push Docker image
+      run: |
+        # Create a unique name for your app
+        APP_NAME="mywebapp-$(date +%s | tail -c 6)"
+        echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+        
+        # Build Docker image
+        docker build -t $APP_NAME .
+        
+        # Login to Azure Container Registry
+        az acr login --name ${{ secrets.ACR_NAME }}
+        
+        # Tag and push image
+        docker tag $APP_NAME ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest
+    
+    # Deploy to Azure Container Instances
+    - name: Deploy to Azure
+      run: |
+        az container create \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --name $APP_NAME \
+          --image ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest \
+          --registry-login-server ${{ secrets.ACR_NAME }}.azurecr.io \
+          --registry-username ${{ secrets.ACR_USERNAME }} \
+          --registry-password ${{ secrets.ACR_PASSWORD }} \
+          --dns-name-label $APP_NAME \
+          --ports 3001 \
+          --environment-variables NODE_ENV=production \
+          --cpu 1 \
+          --memory 1.5 \
+          --restart-policy Always \
+          --location "East US"
+    
+    # Get the URL
+    - name: Get App URL
+      run: |
+        FQDN=$(az container show \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --name $APP_NAME \
+          --query ipAddress.fqdn \
+          --output tsv)
+        echo "🚀 Your app is live at: http://$FQDN:3001"
+        echo "APP_URL=http://$FQDN:3001" >> $GITHUB_ENV

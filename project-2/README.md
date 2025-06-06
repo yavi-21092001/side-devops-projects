@@ -36,3 +36,9 @@ my-webapp/
 ├── Dockerfile
 ├── .github/workflows/deploy.yml
 └── README.md
+
+
+To Create azure Properties, Run this script - azure_setup.sh
+
+chmod +x azure_setup.sh
+./azure_setup.sh

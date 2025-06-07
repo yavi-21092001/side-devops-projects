@@ -63,3 +63,8 @@ echo "3. Push your code to trigger the deployment"
 echo ""
 echo "To clean up later, run:"
 echo "az group delete --name $RESOURCE_GROUP_NAME --yes --no-wait"
+
+
+
+##    To clean up later, run: ###
+#   az group delete --name rg-webapp-deploy --yes --no-wait

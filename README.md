@@ -1,6 +1,8 @@
-# DevOps Portfolio Projects - Implementation Guide
+# DevOps Portfolio Projects - Azure Implementation Guide
 
 This repository contains 5 beginner-to-intermediate DevOps projects designed to help you build a job-winning portfolio. Each project is organized in its own folder with step-by-step implementation instructions.
+
+> ⚠️ **Note:** For this project, I'll be demonstrating using **Azure Cloud**. However, if you're an **AWS** user, you can find the corresponding code files for AWS in the repository and follow along with those instead by using the implementation steps in the README.md files under each AWS project folder.
 
 ---
 
@@ -101,6 +103,7 @@ This repository contains 5 beginner-to-intermediate DevOps projects designed to 
 Each project folder includes its own `README.md` with tailored instructions, configs, and screenshots where applicable.
 
 Be sure to:
+
 * Customize the `.tfvars`, `.yml`, or YAML files to fit your use case
 
 Happy building! 🚀

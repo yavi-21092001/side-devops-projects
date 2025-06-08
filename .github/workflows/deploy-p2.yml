@@ -3,12 +3,12 @@ name: Deploy to Azure Container Instances
 on:
   push:
     branches: [main]
-    paths:
-      - 'azure/project-2-cicd-pipeline/**'  # Updated path
+    # paths:
+      # - 'azure/project-2-cicd-pipeline/**'  
   pull_request:
     branches: [main]
-    paths:
-      - 'azure/project-2-cicd-pipeline/**'  # Updated path
+    # paths:
+      # - 'azure/project-2-cicd-pipeline/**'  
   workflow_dispatch:  # Manual triggering
 
 env:
@@ -22,7 +22,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./azure/project-2-cicd-pipeline  # Updated path
+        working-directory: ./azure/project-2-cicd-pipeline  
     
     steps:
     - name: Checkout code
@@ -33,7 +33,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: './azure/project-2-cicd-pipeline/package-lock.json'  # Updated path
+        cache-dependency-path: './azure/project-2-cicd-pipeline/package-lock.json' 
     
     - name: Install dependencies
       run: npm ci
@@ -54,7 +54,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./azure/project-2-cicd-pipeline  # Updated path
+        working-directory: ./azure/project-2-cicd-pipeline 
     
     steps:
     - name: Checkout code

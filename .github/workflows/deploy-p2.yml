@@ -40,20 +40,26 @@ jobs:
     
     # Build and push to Azure Container Registry
     - name: Build and push Docker image
+      id: build-image
       run: |
-        # Create a unique name for your app
-        APP_NAME="mywebapp-$(date +%s | tail -c 6)"
+        # Create a unique name for your app with timestamp
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        APP_NAME="mywebapp-$TIMESTAMP"
         echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+        echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
+        
+        # Login to Azure Container Registry
+        az acr login --name $ACR_NAME
         
         # Build Docker image
         docker build -t $APP_NAME .
         
-        # Login to Azure Container Registry
-        az acr login --name ${{ secrets.ACR_NAME }}
-        
         # Tag and push image
-        docker tag $APP_NAME ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest
-        docker push ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest
+        IMAGE_TAG="${ACR_NAME}.azurecr.io/${APP_NAME}:latest"
+        docker tag $APP_NAME $IMAGE_TAG
+        docker push $IMAGE_TAG
+        
+        echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
     
     # Deploy to Azure Container Instances
     - name: Deploy to Azure

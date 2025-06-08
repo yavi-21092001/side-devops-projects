@@ -4,6 +4,7 @@ name: Deploy to Azure Container Instances
 on:
   push:
     branches: [main]
+    # Temporarily removed path filters for testing
     # paths:
     #   - 'azure/project-2-cicd-pipeline/**'
   pull_request:
@@ -16,9 +17,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+      ACR_NAME: ${{ secrets.ACR_NAME }}
+
     defaults:
       run:
-        working-directory: ./azure/project-2-cicd-pipeline
+        working-directory: ./azure/project-2-cicd-pipeline  # Updated to match actual directory structure
     
     steps:
     # Get your code
@@ -40,35 +45,29 @@ jobs:
     
     # Build and push to Azure Container Registry
     - name: Build and push Docker image
-      id: build-image
       run: |
-        # Create a unique name for your app with timestamp
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        APP_NAME="mywebapp-$TIMESTAMP"
+        # Create a unique name for your app
+        APP_NAME="mywebapp-$(date +%s | tail -c 6)"
         echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-        echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
-        
-        # Login to Azure Container Registry
-        az acr login --name $ACR_NAME
         
         # Build Docker image
         docker build -t $APP_NAME .
         
-        # Tag and push image
-        IMAGE_TAG="${ACR_NAME}.azurecr.io/${APP_NAME}:latest"
-        docker tag $APP_NAME $IMAGE_TAG
-        docker push $IMAGE_TAG
+        # Login to Azure Container Registry
+        az acr login --name ${{ secrets.ACR_NAME }}
         
-        echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+        # Tag and push image
+        docker tag $APP_NAME ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest
     
     # Deploy to Azure Container Instances
     - name: Deploy to Azure
       run: |
         az container create \
-          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --resource-group $AZURE_RESOURCE_GROUP \
           --name $APP_NAME \
-          --image ${{ secrets.ACR_NAME }}.azurecr.io/$APP_NAME:latest \
-          --registry-login-server ${{ secrets.ACR_NAME }}.azurecr.io \
+          --image $ACR_NAME.azurecr.io/$APP_NAME:latest \
+          --registry-login-server $ACR_NAME.azurecr.io \
           --registry-username ${{ secrets.ACR_USERNAME }} \
           --registry-password ${{ secrets.ACR_PASSWORD }} \
           --dns-name-label $APP_NAME \
@@ -84,7 +83,7 @@ jobs:
     - name: Get App URL
       run: |
         FQDN=$(az container show \
-          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --resource-group $AZURE_RESOURCE_GROUP \
           --name $APP_NAME \
           --query ipAddress.fqdn \
           --output tsv)

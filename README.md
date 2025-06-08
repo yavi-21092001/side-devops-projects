@@ -101,9 +101,6 @@ This repository contains 5 beginner-to-intermediate DevOps projects designed to 
 Each project folder includes its own `README.md` with tailored instructions, configs, and screenshots where applicable.
 
 Be sure to:
-
-* Make your GitHub repos public for visibility
-* Add screenshots to your LinkedIn or portfolio site
 * Customize the `.tfvars`, `.yml`, or YAML files to fit your use case
 
 Happy building! 🚀

@@ -4,13 +4,12 @@ name: Deploy to Azure Container Instances
 on:
   push:
     branches: [main]
-    # Temporarily removed path filters for testing
     # paths:
-    #   - 'project-2-cicd-pipeline/**'
+    #   - 'azure/project-2-cicd-pipeline/**'
   pull_request:
     branches: [main]
     # paths:
-    #   - 'project-2-cicd-pipeline/**'
+    #   - 'azure/project-2-cicd-pipeline/**'
   workflow_dispatch:  # Manual triggering
   
 jobs:
@@ -19,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./project-2-cicd-pipeline  # Updated to match actual directory name
+        working-directory: ./azure/project-2-cicd-pipeline
     
     steps:
     # Get your code
@@ -85,7 +84,6 @@ jobs:
           --output tsv)
         echo "🚀 Your app is live at: http://$FQDN:3001"
         echo "APP_URL=http://$FQDN:3001" >> $GITHUB_ENV
-
 
 
 #         name: Deploy to Azure Container Instances

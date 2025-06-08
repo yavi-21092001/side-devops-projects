@@ -4,12 +4,13 @@ name: Deploy to Azure Container Instances
 on:
   push:
     branches: [main]
-    paths:
-      - 'project-2/**'  # Only run when project-2 changes
+    # Temporarily removed path filters for testing
+    # paths:
+    #   - 'project-2-cicd-pipeline/**'
   pull_request:
     branches: [main]
-    paths:
-      - 'project-2/**'
+    # paths:
+    #   - 'project-2-cicd-pipeline/**'
   workflow_dispatch:  # Manual triggering
   
 jobs:
@@ -18,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./project-2
+        working-directory: ./project-2-cicd-pipeline  # Updated to match actual directory name
     
     steps:
     # Get your code

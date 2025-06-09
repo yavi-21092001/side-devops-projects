@@ -1,273 +1,283 @@
 # My DevOps Web App with Automated Deployment
 
-A simple web application that automatically tests and deploys when you push code to GitHub.
+A modern Node.js web application demonstrating DevOps best practices with automated testing, containerization, and CI/CD deployment to Azure using GitHub Actions.
 
-## What This Does
-- Creates a simple Node.js web application
-- Automatically tests the app when you push code
-- Builds a Docker container 
-- Sets up CI/CD pipeline with GitHub Actions
+## 🎯 What This Project Demonstrates
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) (version 18+)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- [Git](https://git-scm.com/)
+- **🚀 Automated CI/CD Pipeline** - Tests and deploys on every code push
+- **🐳 Containerization** - Docker-based deployment
+- **☁️ Cloud Deployment** - Automated deployment to Azure Container Instances
+- **🧪 Automated Testing** - Unit tests run on every commit
+- **📊 Health Monitoring** - Built-in health checks and metrics
+- **🔧 Infrastructure as Code** - Azure resources managed via scripts
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have:
+
+- [Node.js](https://nodejs.org/) (version 18 or higher)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running
+- [Git](https://git-scm.com/) for version control
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) installed
 - GitHub account
+- Azure account ([free tier](https://azure.microsoft.com/free/) works!)
 
-## Step-by-Step Setup
+## 📁 Project Structure
 
-### 1. Test Locally First
+```
+my-devops-webapp/
+├── app.js                      # Main application file
+├── package.json                # Node.js dependencies
+├── package-lock.json           # Dependency lock file
+├── Dockerfile                  # Container configuration
+├── azure_setup.sh              # Azure infrastructure setup script
+└── README.md                  # This file
+```
+
+## 🚀 Quick Start
+
+### 1. Clone and Setup
+
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/my-devops-webapp.git
+cd my-devops-webapp
+
 # Install dependencies
 npm install
+```
 
-# Start the app
+### 2. Run Locally
+
+```bash
+# Start the application
 npm start
 
-# Open browser to http://localhost:3000
-# You should see your web app!
+# The app will be available at:
+# http://localhost:3001
+```
 
-# Test the health endpoint
-# Open http://localhost:3000/health
+### 3. Test the Application
 
-my-webapp/
-├── app.js
-├── package.json
-├── Dockerfile
-├── .github/workflows/deploy.yml
-└── README.md
+```bash
+# Run tests
+npm test
 
+# Test health endpoint
+curl http://localhost:3001/health
 
-To Create azure Properties, Run this script - azure_setup.sh
+# Test metrics endpoint
+curl http://localhost:3001/metrics
+```
 
+## ☁️ Azure Deployment Setup
+
+### 1. Prepare Azure Environment
+
+```bash
+# Make the setup script executable
 chmod +x azure_setup.sh
+
+# Run the Azure setup (creates resources and secrets)
 ./azure_setup.sh
-
-
-# DevOps Portfolio - Troubleshooting Guide
-
-This guide covers common issues you may encounter while working through the DevOps portfolio projects, along with practical solutions.
-
----
-
-### 🔧 Issue 1: Port 3000 Already in Use
-
-**Error:**
-
-```
-Error: listen EADDRINUSE: address already in use :::3000
 ```
 
-**Cause:** Another app is already running on port 3000.
+This script will:
+- Create Azure Resource Group
+- Set up Azure Container Registry (ACR)
+- Create a Service Principal for GitHub Actions
+- Output the required GitHub secrets
 
-**Solutions:**
+### 2. Configure GitHub Secrets
 
-* Use another port:
+After running the setup script, add these secrets to your GitHub repository:
 
-  ```bash
-  PORT=3001 npm start
-  ```
-* Kill the process (Mac/Linux):
+**Repository Settings → Secrets and variables → Actions → New repository secret**
 
-  ```bash
-  lsof -ti :3000
-  kill -9 <PID>
-  ```
-* Kill the process (Windows):
+- `AZURE_CREDENTIALS` - JSON output from setup script
+- `AZURE_RESOURCE_GROUP` - Your resource group name
+- `ACR_NAME` - Your container registry name
+- `ACR_USERNAME` - Container registry username
+- `ACR_PASSWORD` - Container registry password
 
-  ```bash
-  netstat -ano | findstr :3000
-  taskkill /PID <PID> /F
-  ```
+### 3. Deploy via GitHub Actions
 
----
-
-### 🔧 Issue 2: `npm install` Fails
-
-**Errors:**
-
-* `npm ERR! network timeout`
-* `npm ERR! peer dep missing`
-
-**Solutions:**
-
-* Clear npm cache:
-
-  ```bash
-  npm cache clean --force
-  npm install
-  ```
-* Remove and reinstall dependencies:
-
-  ```bash
-  rm -rf node_modules
-  rm package-lock.json
-  npm install
-  ```
-* Check Node.js version:
-
-  ```bash
-  node --version  # Should be v18.x or higher
-  ```
-
----
-
-### 🔧 Issue 3: Docker Build Fails
-
-**Error:**
-
-```
-ERROR: failed to solve: node:18-alpine: error pulling image
+```bash
+# Commit and push to trigger deployment
+git add .
+git commit -m "Initial deployment"
+git push origin main
 ```
 
-**Cause:** Docker cannot pull the base image.
+The CI/CD pipeline will:
+1. ✅ Run automated tests
+2. 🐳 Build Docker container
+3. 📤 Push to Azure Container Registry
+4. 🚀 Deploy to Azure Container Instances
+5. 🔗 Provide live application URL
 
-**Solutions:**
+## 🔄 CI/CD Pipeline
 
-* Verify Docker is running:
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) includes:
 
-  ```bash
-  docker --version
-  docker ps
-  ```
-* Login to Docker Hub:
+### Test Stage
+- Install Node.js dependencies
+- Run unit tests
+- Build and test Docker image
 
-  ```bash
-  docker login
-  ```
-* Retry the build:
+### Deploy Stage (main branch only)
+- Login to Azure
+- Build and push Docker image to ACR
+- Deploy container to Azure Container Instances
+- Output live application URL
 
-  ```bash
-  docker build -t my-webapp .
-  ```
+## 🛠️ Local Development
 
----
+### Running with Docker
 
-### 🔧 Issue 4: Azure Setup Script Fails
+```bash
+# Build the Docker image
+docker build -t my-webapp .
 
-**Error:**
+# Run the container
+docker run -p 3001:3001 my-webapp
 
+# Access at http://localhost:3001
 ```
-ERROR: The subscription is not registered to use namespace 'Microsoft.ContainerInstance'
+
+### Available Endpoints
+
+- `GET /` - Main application page
+- `GET /health` - Health check endpoint
+- `GET /metrics` - Prometheus metrics endpoint
+
+## 🔧 Troubleshooting
+
+### Common Issues and Solutions
+
+#### ❌ Port 3001 Already in Use
+
+```bash
+# Check what's using the port
+lsof -ti :3001
+
+# Kill the process
+kill -9 <PID>
+
+# Or use a different port
+PORT=3002 npm start
 ```
 
-**Solutions:**
+#### ❌ npm install Fails
 
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Remove and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### ❌ Docker Build Fails
+
+```bash
+# Ensure Docker is running
+docker --version
+docker ps
+
+# Try building again
+docker build -t my-webapp .
+```
+
+#### ❌ Azure Setup Script Fails
+
+**If you get namespace registration errors:**
 ```bash
 az provider register --namespace Microsoft.ContainerInstance
 az provider register --namespace Microsoft.ContainerRegistry
 ```
 
-**Other Error:**
+**If you get permission errors:**
+- Ensure you're using a personal Azure subscription
+- Try different region: edit `LOCATION="West US"` in azure_setup.sh
 
+#### ❌ GitHub Actions Authentication Fails
+
+1. Re-run the Azure setup script:
+   ```bash
+   ./azure_setup.sh
+   ```
+
+2. Update the `AZURE_CREDENTIALS` secret in GitHub with the new JSON output
+
+#### ❌ Can't Access Deployed App
+
+1. **Wait 3-5 minutes** for Azure to assign the IP address
+
+2. **Check deployment status:**
+   ```bash
+   az container list --resource-group rg-webapp-deploy --output table
+   ```
+
+3. **Get the correct URL:**
+   ```bash
+   az container show --resource-group rg-webapp-deploy --name <APP_NAME> --query ipAddress.fqdn --output tsv
+   ```
+
+4. **Check container logs:**
+   ```bash
+   az container logs --resource-group rg-webapp-deploy --name <APP_NAME>
+   ```
+
+## 📊 Monitoring and Metrics
+
+The application includes:
+- **Health checks** at `/health`
+- **Prometheus metrics** at `/metrics`
+- **Request counting** and uptime tracking
+- **Memory usage monitoring**
+
+## 🧹 Cleanup
+
+To avoid ongoing Azure charges:
+
+```bash
+# Delete the resource group and all resources
+az group delete --name rg-webapp-deploy --yes --no-wait
 ```
-ERROR: (AuthorizationFailed)
-```
 
-**Cause:** Permissions issue (especially with Azure for Students)
+## 🎓 What You've Learned
 
-**Solution:**
+By completing this project, you've implemented:
 
-* Make sure you're using your own Azure subscription
-* Try a different region by changing the LOCATION in the script:
+- ✅ **CI/CD Pipeline** with GitHub Actions
+- ✅ **Containerization** with Docker
+- ✅ **Cloud Deployment** to Azure
+- ✅ **Automated Testing** in the pipeline
+- ✅ **Infrastructure as Code** principles
+- ✅ **Monitoring and Observability** basics
+- ✅ **DevOps Security** with proper secret management
 
-  ```bash
-  LOCATION="westus"
-  ```
+## 🔗 Next Steps
+
+- Add database integration
+- Implement blue-green deployments
+- Set up monitoring dashboards with Grafana
+- Add security scanning to the pipeline
+- Explore Kubernetes orchestration
+
+## 📞 Support
+
+If you encounter issues:
+
+1. Check the troubleshooting section above
+2. Review GitHub Actions logs for deployment issues
+3. Check Azure portal for resource status
+4. Verify all secrets are correctly configured
 
 ---
 
-### 🔧 Issue 5: GitHub Actions Failing
+**Happy DevOps! 🚀** 
 
-**Error:**
-
-```
-Login failed: ClientAuthenticationError
-```
-
-**Solution:**
-
-* Re-run the setup script:
-
-  ```bash
-  ./azure_setup.sh
-  ```
-* Copy the new `AZURE_CREDENTIALS` JSON
-* Go to GitHub → Settings → Secrets → Actions → AZURE\_CREDENTIALS → Update
-
-**Error:**
-
-```
-(RegistryLoginError) Failed to login to registry
-```
-
-**Solution:**
-
-* Check `ACR_NAME`, `ACR_USERNAME`, `ACR_PASSWORD`
-* Verify ACR:
-
-  ```bash
-  az acr list --output table
-  ```
-
----
-
-### 🔧 Issue 6: Can't Access Deployed App
-
-**Symptoms:** Deployment shows as successful but the app isn't loading.
-
-**Solutions:**
-
-* Wait 3–5 minutes for Azure IP assignment
-* Check container status:
-
-  ```bash
-  az container list --resource-group rg-webapp-deploy --output table
-  az container show --resource-group rg-webapp-deploy --name <APP_NAME> --query instanceView.state
-  ```
-* View container logs:
-
-  ```bash
-  az container logs --resource-group rg-webapp-deploy --name <APP_NAME>
-  ```
-* Get correct public URL:
-
-  ```bash
-  az container show --resource-group rg-webapp-deploy --name <APP_NAME> --query ipAddress.fqdn --output tsv
-  az container show --resource-group rg-webapp-deploy --name <APP_NAME> --query ipAddress.ip --output tsv
-  ```
-* Test endpoint:
-
-  ```bash
-  curl http://<your-app-url>:3001
-  curl http://<your-app-url>:3001/health
-  ```
-
----
-
-### 🔧 Issue 7: Git Push Fails
-
-**Error:**
-
-```
-remote: Repository not found.
-fatal: repository 'https://github.com/username/repo.git' not found
-```
-
-**Solutions:**
-
-* Check remote URL:
-
-  ```bash
-  git remote -v
-  ```
-* Update it:
-
-  ```bash
-  git remote set-url origin https://github.com/yourusername/my-devops-webapp.git
-  ```
-* Use a Personal Access Token if prompted for a password
-
----
-
-Keep this guide nearby while working through the portfolio projects. Most common DevOps roadblocks are easily fixable with the right commands. 🚑
+*This project demonstrates production-ready DevOps practices in a beginner-friendly way.*

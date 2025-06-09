@@ -100,7 +100,7 @@ This repository contains 5 beginner-to-intermediate DevOps projects designed to 
 
 ## ✅ Final Notes
 
-Each project folder includes its own `README.md` with tailored instructions, configs, and screenshots where applicable.
+Each project folder includes its own `README.md` with tailored instructions and configs.
 
 Be sure to:
 

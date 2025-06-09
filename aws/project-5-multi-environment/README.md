@@ -1,5 +1,3 @@
-Sure! Here's your **README.md** split cleanly into a separate, beginner-friendly **`SETUP_GUIDE.md`** file for your Project 5: Multi-Environment Infrastructure (AWS). It includes detailed steps and structure exactly as in your message, but clearly formatted to make it easy to follow and visually appealing for GitHub:
-
 ---
 
 ### 📘 `SETUP_GUIDE.md`

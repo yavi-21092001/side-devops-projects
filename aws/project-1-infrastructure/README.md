@@ -1,4 +1,4 @@
-Here’s your fully formatted and polished `README.md` in Markdown:
+
 
 ````markdown
 # 🚀 Project 1: Infrastructure as Code (AWS)
